@@ -26,7 +26,9 @@ public interface SwapiGenBot {
             
             Keep the Star Was style in mind, and ensure that the story is engaging and fits within the Star Wars context.
             
-            The result of your creation should be: the movie title and the opening crawler. And that's it. No other information is needed. No introduction, no conclusion, no additional text.
+            The result of your creation should be: the movie title and the opening crawler. Make sure that the crawler has the same style as the original Star Wars movies, with a brief summary of the story.
+            
+            And that's it. No other information is needed. No introduction, no conclusion, no additional text.
             
             At the end, write the results in Brazilian Portuguese, but don't translate any names.
             """)
