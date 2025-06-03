@@ -12,5 +12,5 @@ public interface SpecieService {
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @Path("random")
-    public People getRandomSpecie();
+    public Specie getRandomSpecie();
 }

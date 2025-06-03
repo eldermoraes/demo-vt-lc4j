@@ -12,5 +12,5 @@ public interface StarshipService {
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @Path("random")
-    public People getRandomStarship();
+    public Starship getRandomStarship();
 }

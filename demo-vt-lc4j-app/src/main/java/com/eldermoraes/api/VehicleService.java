@@ -12,5 +12,5 @@ public interface VehicleService {
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @Path("random")
-    public People getRandomVehicle();
+    public Vehicle getRandomVehicle();
 }

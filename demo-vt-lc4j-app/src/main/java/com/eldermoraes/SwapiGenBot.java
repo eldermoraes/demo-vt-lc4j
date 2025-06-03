@@ -1,5 +1,6 @@
 package com.eldermoraes;
 
+import dev.langchain4j.service.MemoryId;
 import dev.langchain4j.service.SystemMessage;
 import dev.langchain4j.service.UserMessage;
 import io.quarkiverse.langchain4j.RegisterAiService;
@@ -28,13 +29,23 @@ public interface SwapiGenBot {
             
             The result of your creation should be: the movie title and the opening crawler. Make sure that the crawler has the same style as the original Star Wars movies, with a brief summary of the story.
             
-            And that's it. No other information is needed. No introduction, no conclusion, no additional text.
+            The title should be in the format: "Star Wars: [Title of the movie]".
             
-            At the end, write the results in Brazilian Portuguese, but don't translate any names.
+            The opening crawler should be in the format: "A long time ago in a galaxy far, far away... [Opening Crawler text]".
+            
+            The title must always be labeled as "Title:" and the opening crawler as "Opening Crawler:".
+            
+            Always bring the title first and then the opening crawler.
+            
+            Make sure to not repeat yourself.
+            
+            And that's it. No other information is needed. No introduction, no conclusion, no notes, no additional text.
+            
+            Translate the results to Brazilian Portuguese, but don't translate any names.
             """)
     @UserMessage("""
             Create a Star Wars spin-off short film propose based on the following items:
             Person: {people}, Planet: {planet}, Species: {specie}, Starship: {starship}, Vehicle: {vehicle}.
             """)
-    String chat(String people, String planet, String specie, String starship, String vehicle);
+    String chat(@MemoryId long i, String people, String planet, String specie, String starship, String vehicle);
 }

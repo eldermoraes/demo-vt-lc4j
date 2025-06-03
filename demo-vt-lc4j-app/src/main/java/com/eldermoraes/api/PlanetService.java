@@ -12,5 +12,5 @@ public interface PlanetService {
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @Path("random")
-    public People getRandomPlanet();
+    public Planet getRandomPlanet();
 }
