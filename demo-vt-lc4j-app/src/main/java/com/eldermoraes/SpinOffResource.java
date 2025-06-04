@@ -16,6 +16,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.*;
 import java.util.concurrent.StructuredTaskScope.*;
+import java.util.concurrent.atomic.AtomicReference;
 
 @Path("spin-offs")
 @RequestScoped
@@ -294,7 +295,7 @@ public class SpinOffResource {
         Map<Integer, String> spinMap = new HashMap<>();
 
         try (var executor  = Executors.newVirtualThreadPerTaskExecutor()){
-            for (int i = 0; i < 100; i++) {
+            for (int i = 0; i < 10; i++) {
                 final int key = i;
                 executor.submit(() -> {
                     String people = peopleList.get(ThreadLocalRandom.current().nextInt(peopleList.size())).getName();
@@ -311,7 +312,58 @@ public class SpinOffResource {
         return Response.ok(spinMap).build();
     }
 
-    private String teste(){
-        return "teste";
+    @GET
+    @Produces(MediaType.TEXT_PLAIN)
+    @Path("create-one-vt-sc")
+    public Response createOneVtSc() throws InterruptedException, ExecutionException {
+
+        People people;
+        Planet planets;
+        Specie species;
+        Starship starships;
+        Vehicle vehicles;
+
+        try(var scope = new StructuredTaskScope.ShutdownOnFailure()){
+            Subtask<People> peopleSubtask = scope.fork(() -> {
+                return peopleService.getRandomPeople();
+            });
+
+            Subtask<Planet> planetSubtask = scope.fork(() -> {
+                return planetService.getRandomPlanet();
+            });
+
+            Subtask<Specie> specieSubtask = scope.fork(() -> {
+                return specieService.getRandomSpecie();
+            });
+
+            Subtask<Starship> starshipSubtask = scope.fork(() -> {
+                return starshipService.getRandomStarship();
+            });
+
+            Subtask<Vehicle> vehicleSubtask = scope.fork(() -> {
+                return vehicleService.getRandomVehicle();
+            });
+
+            scope.join();
+            scope.throwIfFailed();
+
+            people = peopleSubtask.get();
+            planets = planetSubtask.get();
+            species = specieSubtask.get();
+            starships = starshipSubtask.get();
+            vehicles = vehicleSubtask.get();
+        }
+
+        String spin;
+
+        try (var executor  = Executors.newVirtualThreadPerTaskExecutor()){
+            spin = executor.submit(() -> {
+                return swapiGenBot.chat(1L, people.getName(), planets.getName(), species.getName(), starships.getName(), vehicles.getName());
+            }).get();
+        }
+
+        return Response.ok(spin).build();
     }
+
+
 }
