@@ -294,7 +294,7 @@ public class SpinOffResource {
         Map<Integer, String> spinMap = new HashMap<>();
 
         try (var executor  = Executors.newVirtualThreadPerTaskExecutor()){
-            for (int i = 0; i < 10; i++) {
+            for (int i = 0; i < 100; i++) {
                 final int key = i;
                 executor.submit(() -> {
                     String people = peopleList.get(ThreadLocalRandom.current().nextInt(peopleList.size())).getName();

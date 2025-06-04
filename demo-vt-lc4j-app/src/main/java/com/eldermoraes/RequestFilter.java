@@ -17,15 +17,11 @@ public class RequestFilter implements ClientRequestFilter {
     @ConfigProperty(name="demo-llama.token")
     Optional<String> llamaToken;
 
-    @ConfigProperty(name="demo-nomic.token")
-    Optional<String> nomicToken;
-
     @Override
     public void filter(ClientRequestContext requestContext) throws IOException {
 
         Map<String, String> aiServiceMap = Map.of(
-                "LlamaAIService", llamaToken.orElse(""),
-                "NomicAIService", nomicToken.orElse("")
+                "SwapiGenBot", llamaToken.orElse("")
         );
 
         StackTraceElement[] stackTrace = Thread.currentThread().getStackTrace();
@@ -34,10 +30,7 @@ public class RequestFilter implements ClientRequestFilter {
             String className = element.getClassName();
 
             for (Map.Entry<String, String> entry : aiServiceMap.entrySet()) {
-                if (className.contains(entry.getKey())) {
-                    requestContext.getHeaders().putSingle("Authorization", entry.getValue());
-                    return;
-                }
+                requestContext.getHeaders().putSingle("Authorization", entry.getValue());
             }
         }
     }
