@@ -6,7 +6,7 @@ import dev.langchain4j.service.UserMessage;
 import io.quarkiverse.langchain4j.RegisterAiService;
 import jakarta.inject.Singleton;
 
-@RegisterAiService
+@RegisterAiService(modelName = "demo-llama")
 @Singleton
 public interface SwapiGenBot {
 

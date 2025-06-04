@@ -14,8 +14,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ThreadLocalRandom;
+import java.util.concurrent.*;
+import java.util.concurrent.StructuredTaskScope.*;
 
 @Path("spin-offs")
 @RequestScoped
@@ -166,5 +166,152 @@ public class SpinOffResource {
         }
 
         return Response.ok(spinMap).build();
+    }
+
+    @GET
+    @Produces(MediaType.TEXT_PLAIN)
+    @Path("create-10-vt-full")
+    public Response createTenVtFull() {
+
+        Map<Integer, String> spinMap = new HashMap<>();
+
+        try (var executor  = Executors.newVirtualThreadPerTaskExecutor()){
+
+            List<People> peopleList = new ArrayList<>();
+            for (int i = 0; i < 10; i++) {
+                executor.submit(() -> {
+                    peopleList.add(peopleService.getRandomPeople());
+                });
+            }
+
+            List<Planet> planetList = new ArrayList<>();
+            for (int i = 0; i < 10; i++) {
+                executor.submit(() -> {
+                    planetList.add(planetService.getRandomPlanet());
+                });
+            }
+
+            List<Specie> specieList = new ArrayList<>();
+            for (int i = 0; i < 10; i++) {
+                executor.submit(() -> {
+                    specieList.add(specieService.getRandomSpecie());
+                });
+            }
+
+            List<Starship> starshipList = new ArrayList<>();
+            for (int i = 0; i < 10; i++) {
+                executor.submit(() -> {
+                    starshipList.add(starshipService.getRandomStarship());
+                });
+            }
+
+            List<Vehicle> vehicleList = new ArrayList<>();
+            for (int i = 0; i < 10; i++) {
+                executor.submit(() -> {
+                    vehicleList.add(vehicleService.getRandomVehicle());
+                });
+            }
+
+            for (int i = 0; i < 10; i++) {
+                final int key = i;
+                executor.submit(() -> {
+                    String people = peopleList.get(ThreadLocalRandom.current().nextInt(peopleList.size())).getName();
+                    String planet = planetList.get(ThreadLocalRandom.current().nextInt(planetList.size())).getName();
+                    String specie = specieList.get(ThreadLocalRandom.current().nextInt(specieList.size())).getName();
+                    String starship = starshipList.get(ThreadLocalRandom.current().nextInt(starshipList.size())).getName();
+                    String vehicle = vehicleList.get(ThreadLocalRandom.current().nextInt(vehicleList.size())).getName();
+
+                    spinMap.put(key, swapiGenBot.chat(1L, people, planet, specie, starship, vehicle));
+                });
+            }
+        }
+
+        return Response.ok(spinMap).build();
+    }
+
+    @GET
+    @Produces(MediaType.TEXT_PLAIN)
+    @Path("create-10-vt-sc")
+    public Response createTenVtSc() throws InterruptedException, ExecutionException {
+
+        List<People> peopleList;
+        List<Planet> planetList;
+        List<Specie> specieList;
+        List<Starship> starshipList;
+        List<Vehicle> vehicleList;
+
+        try(var scope = new StructuredTaskScope.ShutdownOnFailure()){
+            Subtask<List<People>> peopleSubtask = scope.fork(() -> {
+                List<People> list = new ArrayList<>();
+                for (int i = 0; i < 10; i++) {
+                    list.add(peopleService.getRandomPeople());
+                }
+                return list;
+            });
+
+            Subtask<List<Planet>> planetSubtask = scope.fork(() -> {
+                List<Planet> list = new ArrayList<>();
+                for (int i = 0; i < 10; i++) {
+                    list.add(planetService.getRandomPlanet());
+                }
+                return list;
+            });
+
+            Subtask<List<Specie>> specieSubtask = scope.fork(() -> {
+                List<Specie> list = new ArrayList<>();
+                for (int i = 0; i < 10; i++) {
+                    list.add(specieService.getRandomSpecie());
+                }
+                return list;
+            });
+
+            Subtask<List<Starship>> starshipSubtask = scope.fork(() -> {
+                List<Starship> list = new ArrayList<>();
+                for (int i = 0; i < 10; i++) {
+                    list.add(starshipService.getRandomStarship());
+                }
+                return list;
+            });
+
+            Subtask<List<Vehicle>> vehicleSubtask = scope.fork(() -> {
+                List<Vehicle> list = new ArrayList<>();
+                for (int i = 0; i < 10; i++) {
+                    list.add(vehicleService.getRandomVehicle());
+                }
+                return list;
+            });
+
+            scope.join();
+            scope.throwIfFailed();
+
+            peopleList = peopleSubtask.get();
+            planetList = planetSubtask.get();
+            specieList = specieSubtask.get();
+            starshipList = starshipSubtask.get();
+            vehicleList = vehicleSubtask.get();
+        }
+
+        Map<Integer, String> spinMap = new HashMap<>();
+
+        try (var executor  = Executors.newVirtualThreadPerTaskExecutor()){
+            for (int i = 0; i < 10; i++) {
+                final int key = i;
+                executor.submit(() -> {
+                    String people = peopleList.get(ThreadLocalRandom.current().nextInt(peopleList.size())).getName();
+                    String planet = planetList.get(ThreadLocalRandom.current().nextInt(planetList.size())).getName();
+                    String specie = specieList.get(ThreadLocalRandom.current().nextInt(specieList.size())).getName();
+                    String starship = starshipList.get(ThreadLocalRandom.current().nextInt(starshipList.size())).getName();
+                    String vehicle = vehicleList.get(ThreadLocalRandom.current().nextInt(vehicleList.size())).getName();
+
+                    spinMap.put(key, swapiGenBot.chat(1L, people, planet, specie, starship, vehicle));
+                });
+            }
+        }
+
+        return Response.ok(spinMap).build();
+    }
+
+    private String teste(){
+        return "teste";
     }
 }
