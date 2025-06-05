@@ -6,6 +6,8 @@ import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
 import org.eclipse.microprofile.rest.client.inject.RegisterRestClient;
 
+import java.util.List;
+
 @RegisterRestClient
 public interface PeopleService {
 
@@ -13,4 +15,8 @@ public interface PeopleService {
     @Produces(MediaType.APPLICATION_JSON)
     @Path("random")
     public People getRandomPeople();
+
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    public List<People> getAllPeople();
 }
