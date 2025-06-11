@@ -11,6 +11,7 @@ import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import org.eclipse.microprofile.faulttolerance.Retry;
+import org.eclipse.microprofile.faulttolerance.Timeout;
 import org.eclipse.microprofile.rest.client.inject.RestClient;
 
 import java.util.ArrayList;
@@ -48,19 +49,6 @@ public class SpinOffBoostResource {
     VehicleService vehicleService;
 
 
-    @GET
-    @Produces(MediaType.TEXT_PLAIN )
-    @Retry(maxRetries = 5, delay = 3000)
-    public Response getSpinOffBoost() {
-        String people = peopleList.get(ThreadLocalRandom.current().nextInt(peopleList.size())).getName();
-        String planet = planetList.get(ThreadLocalRandom.current().nextInt(planetList.size())).getName();
-        String specie = specieList.get(ThreadLocalRandom.current().nextInt(specieList.size())).getName();
-        String starship = starshipList.get(ThreadLocalRandom.current().nextInt(starshipList.size())).getName();
-        String vehicle = vehicleList.get(ThreadLocalRandom.current().nextInt(vehicleList.size())).getName();
-
-        return Response.ok(swapiGenBot.chat(1L, people, planet, specie, starship, vehicle)).build();
-    }
-
     @Startup
     void init() throws InterruptedException, ExecutionException {
         try(var scope = new StructuredTaskScope.ShutdownOnFailure()){
@@ -94,4 +82,20 @@ public class SpinOffBoostResource {
             vehicleList = vehicleSubtask.get();
         }
     }
+
+    @GET
+    @Produces(MediaType.TEXT_PLAIN )
+    @Retry(maxRetries = 5, delay = 3000)
+    @Timeout(value = 300000)
+    public Response getSpinOffBoost() {
+        String people = peopleList.get(ThreadLocalRandom.current().nextInt(peopleList.size())).getName();
+        String planet = planetList.get(ThreadLocalRandom.current().nextInt(planetList.size())).getName();
+        String specie = specieList.get(ThreadLocalRandom.current().nextInt(specieList.size())).getName();
+        String starship = starshipList.get(ThreadLocalRandom.current().nextInt(starshipList.size())).getName();
+        String vehicle = vehicleList.get(ThreadLocalRandom.current().nextInt(vehicleList.size())).getName();
+
+        return Response.ok(swapiGenBot.chat(1L, people, planet, specie, starship, vehicle)).build();
+    }
+
+
 }

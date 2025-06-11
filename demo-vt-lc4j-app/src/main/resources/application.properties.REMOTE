@@ -9,7 +9,7 @@ quarkus.langchain4j.openai.chat-model.temperature=0.3
 quarkus.langchain4j.openai.timeout=600s
 quarkus.langchain4j.openai.chat-model.model-name=meta-llama/Llama-3.1-8B-Instruct
 quarkus.langchain4j.openai.base-url=https://llama-3-1-8b-instruct-maas-apicast-production.apps.prod.rhoai.rh-aiservices-bu.com:443/v1
-demo-llama.token=Bearer 
+demo-llama.token=Bearer
 
 # NOMIC
 quarkus.langchain4j.embedding-model.provider=ollama
@@ -18,7 +18,7 @@ quarkus.langchain4j.ollama.embedding-model.model-id=nomic-embed-text:v1.5
 quarkus.langchain4j.ollama.devservices.enabled=false
 
 
-swapi-url=http://swapi-app-eldermoraes-dev.apps.rm2.thpm.p1.openshiftapps.com/api
+swapi-url=https://swapi.build/api
 
 quarkus.rest-client."com.eldermoraes.api.PeopleService".url=${swapi-url}/people
 quarkus.rest-client."com.eldermoraes.api.PlanetService".url=${swapi-url}/planets

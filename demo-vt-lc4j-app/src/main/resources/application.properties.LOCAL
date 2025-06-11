@@ -14,7 +14,7 @@ quarkus.langchain4j.ollama.timeout=600s
 quarkus.langchain4j.ollama.devservices.enabled=false
 
 
-swapi-url=http://swapi-app-eldermoraes-dev.apps.rm2.thpm.p1.openshiftapps.com/api
+swapi-url=https://swapi.build/api
 
 quarkus.rest-client."com.eldermoraes.api.PeopleService".url=${swapi-url}/people
 quarkus.rest-client."com.eldermoraes.api.PlanetService".url=${swapi-url}/planets
