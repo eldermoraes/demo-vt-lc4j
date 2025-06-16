@@ -103,7 +103,7 @@ public class SpinOffResource {
         }
 
 
-        Map<Integer, String> spinMap = new HashMap<>();
+        Map<Integer, String> spinMap = new ConcurrentHashMap<>();
 
         try (var executor  = Executors.newVirtualThreadPerTaskExecutor()){
             for (int i = 0; i < 10; i++) {
@@ -128,7 +128,7 @@ public class SpinOffResource {
     @Path("create-10-vt-full")
     public Response createTenVtFull() {
 
-        Map<Integer, String> spinMap = new HashMap<>();
+        Map<Integer, String> spinMap = new ConcurrentHashMap<>();
 
         try (var executor  = Executors.newVirtualThreadPerTaskExecutor()){
 
@@ -246,7 +246,7 @@ public class SpinOffResource {
             vehicleList = vehicleSubtask.get();
         }
 
-        Map<Integer, String> spinMap = new HashMap<>();
+        Map<Integer, String> spinMap = new ConcurrentHashMap<>();
 
         try (var executor  = Executors.newVirtualThreadPerTaskExecutor()){
             for (int i = 0; i < 10; i++) {
