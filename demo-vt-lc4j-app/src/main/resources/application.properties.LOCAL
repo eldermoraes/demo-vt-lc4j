@@ -7,7 +7,8 @@ quarkus.langchain4j.timeout=600s
 quarkus.langchain4j.chat-model.provider=ollama
 quarkus.langchain4j.embedding-model.provider=ollama
 quarkus.langchain4j.ollama.base-url=http://127.0.0.1:11434
-quarkus.langchain4j.ollama.chat-model.model-id=llama3.2:3b
+#quarkus.langchain4j.ollama.chat-model.model-id=llama3.2:3b
+quarkus.langchain4j.ollama.chat-model.model-id=gpt-oss:20b
 quarkus.langchain4j.ollama.embedding-model.model-id=nomic-embed-text:v1.5
 quarkus.langchain4j.ollama.chat-model.temperature=0.3
 quarkus.langchain4j.ollama.timeout=600s
@@ -21,3 +22,5 @@ quarkus.rest-client."com.eldermoraes.api.PlanetService".url=${swapi-url}/planets
 quarkus.rest-client."com.eldermoraes.api.SpecieService".url=${swapi-url}/species
 quarkus.rest-client."com.eldermoraes.api.StarshipService".url=${swapi-url}/starships
 quarkus.rest-client."com.eldermoraes.api.VehicleService".url=${swapi-url}/vehicles
+
+quarkus.vertx.max-event-loop-execute-time=1000S

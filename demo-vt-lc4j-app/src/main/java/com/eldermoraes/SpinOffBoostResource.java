@@ -8,6 +8,7 @@ import jakarta.inject.Inject;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import org.eclipse.microprofile.faulttolerance.Retry;
@@ -16,11 +17,11 @@ import org.eclipse.microprofile.rest.client.inject.RestClient;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.StructuredTaskScope;
-import java.util.concurrent.ThreadLocalRandom;
+import java.util.Map;
+import java.util.concurrent.*;
 
 @Path("spin-off-boost")
+@Produces(MediaType.TEXT_PLAIN )
 @RunOnVirtualThread
 public class SpinOffBoostResource {
 
@@ -84,17 +85,29 @@ public class SpinOffBoostResource {
     }
 
     @GET
-    @Produces(MediaType.TEXT_PLAIN )
     @Retry(maxRetries = 5, delay = 3000)
     @Timeout(value = 300000)
-    public Response getSpinOffBoost() {
-        String people = peopleList.get(ThreadLocalRandom.current().nextInt(peopleList.size())).getName();
-        String planet = planetList.get(ThreadLocalRandom.current().nextInt(planetList.size())).getName();
-        String specie = specieList.get(ThreadLocalRandom.current().nextInt(specieList.size())).getName();
-        String starship = starshipList.get(ThreadLocalRandom.current().nextInt(starshipList.size())).getName();
-        String vehicle = vehicleList.get(ThreadLocalRandom.current().nextInt(vehicleList.size())).getName();
+    @Path("create-n")
+    public Response createN(@QueryParam("times") Integer n) {
 
-        return Response.ok(swapiGenBot.chat(1L, people, planet, specie, starship, vehicle)).build();
+        Map<Integer, String> spinMap = new ConcurrentHashMap<>();
+
+        try (var executor  = Executors.newVirtualThreadPerTaskExecutor()){
+            for (int i = 0; i < n; i++) {
+                final int key = i;
+                executor.submit(() -> {
+                    String people = peopleList.get(ThreadLocalRandom.current().nextInt(peopleList.size())).getName();
+                    String planet = planetList.get(ThreadLocalRandom.current().nextInt(planetList.size())).getName();
+                    String specie = specieList.get(ThreadLocalRandom.current().nextInt(specieList.size())).getName();
+                    String starship = starshipList.get(ThreadLocalRandom.current().nextInt(starshipList.size())).getName();
+                    String vehicle = vehicleList.get(ThreadLocalRandom.current().nextInt(vehicleList.size())).getName();
+
+                    spinMap.put(key, swapiGenBot.chat(1L, people, planet, specie, starship, vehicle));
+                });
+            }
+        }
+
+        return Response.ok(spinMap).build();
     }
 
 

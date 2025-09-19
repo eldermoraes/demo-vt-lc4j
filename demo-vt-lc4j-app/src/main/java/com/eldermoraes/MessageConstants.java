@@ -19,7 +19,6 @@ public class MessageConstants {
             Always bring the title first and then the opening crawler.
             Make sure to not repeat yourself.
             And that's it. No other information is needed. No introduction, no conclusion, no notes, no additional text.
-            Translate the results to Brazilian Portuguese, but don't translate any names.
             """;
 
     public static final String USER_MESSAGE=

@@ -7,9 +7,9 @@ quarkus.langchain4j.timeout=600s
 quarkus.langchain4j.chat-model.provider=openai
 quarkus.langchain4j.openai.chat-model.temperature=0.3
 quarkus.langchain4j.openai.timeout=600s
-quarkus.langchain4j.openai.chat-model.model-name=meta-llama/Llama-3.1-8B-Instruct
-quarkus.langchain4j.openai.base-url=https://llama-3-1-8b-instruct-maas-apicast-production.apps.prod.rhoai.rh-aiservices-bu.com:443/v1
-demo-llama.token=Bearer [KEY]
+quarkus.langchain4j.openai.chat-model.model-name=llama-3-2-3b
+quarkus.langchain4j.openai.base-url=https://llama-3-2-3b-maas-apicast-production.apps.prod.rhoai.rh-aiservices-bu.com:443/v1
+demo-llama.token=Bearer 8de43485a11d35095d1e4c6b029c51fb
 
 # NOMIC
 quarkus.langchain4j.embedding-model.provider=ollama
@@ -25,3 +25,5 @@ quarkus.rest-client."com.eldermoraes.api.PlanetService".url=${swapi-url}/planets
 quarkus.rest-client."com.eldermoraes.api.SpecieService".url=${swapi-url}/species
 quarkus.rest-client."com.eldermoraes.api.StarshipService".url=${swapi-url}/starships
 quarkus.rest-client."com.eldermoraes.api.VehicleService".url=${swapi-url}/vehicles
+
+quarkus.vertx.max-event-loop-execute-time=1000S
