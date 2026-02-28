@@ -1,29 +1,26 @@
-package com.eldermoraes;
+package com.eldermoraes.step05;
 
-
+import com.eldermoraes.ai.SwAPIGenBot;
 import com.eldermoraes.api.*;
 import io.quarkus.runtime.Startup;
 import io.smallrye.common.annotation.RunOnVirtualThread;
+import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
-import jakarta.ws.rs.GET;
-import jakarta.ws.rs.Path;
-import jakarta.ws.rs.Produces;
-import jakarta.ws.rs.QueryParam;
-import jakarta.ws.rs.core.MediaType;
-import jakarta.ws.rs.core.Response;
 import org.eclipse.microprofile.faulttolerance.Retry;
 import org.eclipse.microprofile.faulttolerance.Timeout;
 import org.eclipse.microprofile.rest.client.inject.RestClient;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.concurrent.*;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Executors;
+import java.util.concurrent.StructuredTaskScope;
+import java.util.concurrent.ThreadLocalRandom;
+import java.util.concurrent.atomic.AtomicReference;
 
-@Path("spin-off-boost")
-@Produces(MediaType.TEXT_PLAIN )
+@ApplicationScoped
 @RunOnVirtualThread
-public class SpinOffBoostResource {
+public class Step05Service {
 
     static List<People> peopleList = new ArrayList<>();
     static List<Planet> planetList = new ArrayList<>();
@@ -32,7 +29,7 @@ public class SpinOffBoostResource {
     static List<Vehicle> vehicleList = new ArrayList<>();
 
     @Inject
-    SwapiGenBot swapiGenBot;
+    SwAPIGenBot swapiGenBot;
 
     @RestClient
     PeopleService peopleService;
@@ -52,7 +49,9 @@ public class SpinOffBoostResource {
 
     @Startup
     void init() throws InterruptedException, ExecutionException {
-        try(var scope = new StructuredTaskScope.ShutdownOnFailure()){
+        try (var scope = StructuredTaskScope.open(
+                StructuredTaskScope.Joiner.awaitAllSuccessfulOrThrow())) {
+
             StructuredTaskScope.Subtask<List<People>> peopleSubtask = scope.fork(() -> {
                 return peopleService.getAllPeople();
             });
@@ -74,7 +73,6 @@ public class SpinOffBoostResource {
             });
 
             scope.join();
-            scope.throwIfFailed();
 
             peopleList = peopleSubtask.get();
             planetList = planetSubtask.get();
@@ -84,31 +82,24 @@ public class SpinOffBoostResource {
         }
     }
 
-    @GET
     @Retry(maxRetries = 5, delay = 3000)
     @Timeout(value = 300000)
-    @Path("create-n")
-    public Response createN(@QueryParam("times") Integer n) {
+    public String create() {
 
-        Map<Integer, String> spinMap = new ConcurrentHashMap<>();
+        AtomicReference<String> response = new AtomicReference<>();
 
         try (var executor  = Executors.newVirtualThreadPerTaskExecutor()){
-            for (int i = 0; i < n; i++) {
-                final int key = i;
-                executor.submit(() -> {
-                    String people = peopleList.get(ThreadLocalRandom.current().nextInt(peopleList.size())).getName();
-                    String planet = planetList.get(ThreadLocalRandom.current().nextInt(planetList.size())).getName();
-                    String specie = specieList.get(ThreadLocalRandom.current().nextInt(specieList.size())).getName();
-                    String starship = starshipList.get(ThreadLocalRandom.current().nextInt(starshipList.size())).getName();
-                    String vehicle = vehicleList.get(ThreadLocalRandom.current().nextInt(vehicleList.size())).getName();
+            executor.submit(() -> {
+                String people = peopleList.get(ThreadLocalRandom.current().nextInt(peopleList.size())).getName();
+                String planet = planetList.get(ThreadLocalRandom.current().nextInt(planetList.size())).getName();
+                String specie = specieList.get(ThreadLocalRandom.current().nextInt(specieList.size())).getName();
+                String starship = starshipList.get(ThreadLocalRandom.current().nextInt(starshipList.size())).getName();
+                String vehicle = vehicleList.get(ThreadLocalRandom.current().nextInt(vehicleList.size())).getName();
 
-                    spinMap.put(key, swapiGenBot.chat(1L, people, planet, specie, starship, vehicle));
-                });
-            }
+                response.set(swapiGenBot.chat(1L, people, planet, specie, starship, vehicle));
+            });
         }
 
-        return Response.ok(spinMap).build();
+        return response.get();
     }
-
-
 }

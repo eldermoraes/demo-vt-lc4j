@@ -1,4 +1,4 @@
-package com.eldermoraes;
+package com.eldermoraes.ai;
 
 public class MessageConstants {
 
